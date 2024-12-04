@@ -61,7 +61,7 @@ app.post('/upload-tickets', upload.single('file'), async (req, res) => {
                 };
 
                 // Generate QR Code as Data URL
-                const qrCodeData = await QRCode.toDataURL('https://ticket-generate.onrender.com/'+ ticket.ticketNumber);
+                const qrCodeData = await QRCode.toDataURL('https://ticket-generate.onrender.com/validate-ticket'+ ticket.ticketNumber);
                 ticket.image = qrCodeData; // Save QR code image as base64
 
                 return ticket;
