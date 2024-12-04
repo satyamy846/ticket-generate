@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ticket Information</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="ticket-container">
+    <h1>Ticket Information</h1>
+    <p>Your Ticket Number: <span class="ticket-number">Loading...</span></p>
+    <button id="validate-button">Validate</button>
+  </div>
+
+  <script>
+    // Extract ticketNumber from the URL parameters
+    
+//   const urlParams = new URLSearchParams(window.location.search);
+  const ticketNumber = window.location.pathname.split('/')[2]
+
+  // Check if ticketNumber is available
+  if (!ticketNumber) {
+    document.querySelector('.ticket-number').textContent = 'No ticket number provided';
+    throw new Error('Ticket number missing in URL');
+  }
+    // Fetch the ticket details from the server
+    fetch(`/validate-ticket/${ticketNumber}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Ticket not found or server error');
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.ticket) {
+          document.querySelector('.ticket-number').textContent = data.ticket.ticketNumber;
+        } else {
+          document.querySelector('.ticket-number').textContent = 'Invalid ticket';
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching ticket details:', error);
+        document.querySelector('.ticket-number').textContent = 'Error loading ticket';
+      });
+
+    // Validate ticket when the button is clicked
+    const validateButton = document.getElementById('validate-button');
+    validateButton.addEventListener('click', () => {
+      fetch(`/validate-ticket/${ticketNumber}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ validate: true }) // Include payload if needed
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Error validating ticket');
+          }
+          return response.json();
+        })
+        .then(data => {
+          alert(data.message); // Display success message
+          console.log('Ticket validated:', data.ticket);
+        })
+        .catch(error => {
+          console.error('Error validating ticket:', error);
+          alert('Error validating ticket. Please try again.');
+        });
+    });
+  </script>
+</body>
+</html>
