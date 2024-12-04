@@ -13,12 +13,12 @@ const upload = multer({ dest: 'uploads/' });
 
 
 // Serve HTML Page
-app.get('/', (req, res) => {
+app.get('/upload', (req, res) => {
     res.sendFile(path.join(__dirname, 'upload.html'));
 });
 
-app.get('/display', (req, res) => {
-    res.sendFile(path.join(__dirname, 'display.html'));
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 const connection = async () => {
@@ -61,7 +61,7 @@ app.post('/upload-tickets', upload.single('file'), async (req, res) => {
                 };
 
                 // Generate QR Code as Data URL
-                const qrCodeData = await QRCode.toDataURL('https://ticket-served-page.vercel.app/ticket/'+ ticket.ticketNumber);
+                const qrCodeData = await QRCode.toDataURL('https://ticket-generate-fawn.vercel.app/'+ ticket.ticketNumber);
                 ticket.image = qrCodeData; // Save QR code image as base64
 
                 return ticket;
